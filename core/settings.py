@@ -22,7 +22,6 @@ DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 # Permitir todos los hosts temporalmente para evitar errores al desplegar en Vercel
 ALLOWED_HOSTS = ['*']
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -30,7 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ventas', 
+    'ventas',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
