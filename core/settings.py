@@ -5,19 +5,19 @@ Django settings for core project.
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import dj_database_url
 
 # Cargar las variables del archivo .env para proteger la seguridad de la información
-load_dotenv()
+load_dotenv(override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+# Usa la variable del .env, o un valor por defecto si no la encuentra
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-tgse7oq3wf!&n#_au^awc48uf0c1scb(d57yo)u1g2fwo=-wsb')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 # Permitir todos los hosts temporalmente para evitar errores al desplegar en Vercel
 ALLOWED_HOSTS = ['*']
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ventas',
+    'ventas',  # Ojo: revisa si tu app se llama 'ventas' o 'inventario'
 ]
 
 MIDDLEWARE = [
@@ -62,12 +62,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database - Configurada para leer Supabase desde el archivo .env
+# Database - Configurada para leer Supabase desde el archivo .env con variables separadas
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
 }
 
 # Password validation
