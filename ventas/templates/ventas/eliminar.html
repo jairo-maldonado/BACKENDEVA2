@@ -1,23 +1,23 @@
 {% extends 'ventas/base.html' %}
 
+{% block title %}Eliminar Producto | BackendU2{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm border-danger">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0">Confirmar Eliminación</h4>
-            </div>
-            <div class="card-body text-center">
-                <p class="lead">¿Estás seguro de que deseas eliminar el producto <strong>{{ producto.nombre }}</strong>?</p>
-                <p class="text-muted">Esta acción no se puede deshacer.</p>
-                
-                <form method="POST">
-                    {% csrf_token %}
-                    <a href="{% url 'listar_productos' %}" class="btn btn-secondary me-2">Cancelar</a>
-                    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-                </form>
-            </div>
+<div class="max-w-md mx-auto space-y-6">
+    <div class="bg-slate-800 border border-rose-500/30 rounded-xl p-6 shadow-lg text-center space-y-4">
+        <div class="w-12 h-12 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto text-xl font-bold">
+            !
         </div>
+        <h2 class="text-xl font-bold text-white">¿Eliminar producto?</h2>
+        <p class="text-sm text-slate-300">
+            Estás a punto de eliminar <span class="font-semibold text-white">"{{ object.nombre }}"</span>. Esta acción no se puede deshacer.
+        </p>
+
+        <form method="post" class="pt-4 flex items-center justify-center gap-3">
+            {% csrf_token %}
+            <a href="{% url 'ventas:listar_productos' %}" class="px-4 py-2 text-sm font-medium rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition">Cancelar</a>
+            <button type="submit" class="px-5 py-2 text-sm font-medium rounded-lg bg-rose-600 hover:bg-rose-500 text-white transition shadow-sm">Confirmar Eliminación</button>
+        </form>
     </div>
 </div>
 {% endblock %}

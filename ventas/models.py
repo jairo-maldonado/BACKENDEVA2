@@ -9,9 +9,11 @@ class Producto(models.Model):
     class Meta:
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
+        ordering = ['nombre']
 
     def __str__(self):
-        return f"{self.nombre} - ${self.precio}"
+        return f"{self.nombre} - ${self.precio:,}".replace(',', '.')
+
 
 class Venta(models.Model):
     fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de la Venta")
@@ -21,10 +23,16 @@ class Venta(models.Model):
     class Meta:
         verbose_name = "Venta"
         verbose_name_plural = "Ventas"
-        ordering = ['-fecha'] 
+        ordering = ['-fecha']
 
     def __str__(self):
-        return f"Venta #{self.id} - {self.fecha.strftime('%d/%m/%Y')}"
+        fecha_formateada = self.fecha.strftime('%d/%m/%Y %H:%M') if self.fecha else "Borrador"
+        return f"Venta #{self.id} - {fecha_formateada}"
+
+    def actualizar_total(self):
+        self.total = sum(detalle.subtotal for detalle in self.detalles.all())
+        super().save(update_fields=['total'])
+
 
 class DetalleVenta(models.Model):
     venta = models.ForeignKey(Venta, related_name='detalles', on_delete=models.CASCADE)
@@ -40,9 +48,17 @@ class DetalleVenta(models.Model):
         return f"{self.cantidad} x {self.producto.nombre}"
 
     def clean(self):
-        if self.producto.stock < self.cantidad:
-            raise ValidationError(f"No hay suficiente stock. Stock actual: {self.producto.stock}")
+        if self.producto and self.producto.stock < self.cantidad:
+            raise ValidationError(f"No hay suficiente stock para '{self.producto.nombre}'. Stock actual: {self.producto.stock}")
 
     def save(self, *args, **kwargs):
+        self.clean()
         self.subtotal = self.cantidad * self.producto.precio
+        
+        # Descontar stock si es un registro nuevo
+        if not self.pk:
+            self.producto.stock -= self.cantidad
+            self.producto.save(update_fields=['stock'])
+
         super().save(*args, **kwargs)
+        self.venta.actualizar_total()

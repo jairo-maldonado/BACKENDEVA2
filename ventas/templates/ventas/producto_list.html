@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos | BackendU2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-700 pb-5 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-white">Catálogo de Productos</h1>
+                <p class="text-sm text-slate-400 mt-1">Gestión de inventario para evaluación BackendU2</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/admin/" class="px-4 py-2 text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 transition">Panel Admin</a>
+                <a href="/crear/" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition shadow-sm">+ Nuevo Producto</a>
+            </div>
+        </header>
+
+        <!-- Feedback Messages -->
+        {% if messages %}
+            <div class="space-y-2">
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg bg-emerald-950 border border-emerald-500/50 text-emerald-300 text-sm flex items-center justify-between">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Tabla de Productos -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-800/80 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-700">
+                        <tr>
+                            <th scope="col" class="py-3.5 px-6 font-semibold">Producto</th>
+                            <th scope="col" class="py-3.5 px-6 font-semibold">Precio</th>
+                            <th scope="col" class="py-3.5 px-6 font-semibold">Stock</th>
+                            <th scope="col" class="py-3.5 px-6 font-semibold text-right">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700/60">
+                        {% for producto in object_list %}
+                            <tr class="hover:bg-slate-700/40 transition">
+                                <td class="py-4 px-6 font-medium text-white">{{ producto.nombre }}</td>
+                                <td class="py-4 px-6 text-slate-300">${{ producto.precio }}</td>
+                                <td class="py-4 px-6 text-slate-300">{{ producto.stock }} uds.</td>
+                                <td class="py-4 px-6 text-right">
+                                    {% if producto.stock > 0 %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Disponible</span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">Agotado</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-slate-400">
+                                    No hay productos registrados en el sistema.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if is_paginated %}
+                <div class="flex items-center justify-between px-6 py-4 border-t border-slate-700 bg-slate-800/60">
+                    <div class="text-xs text-slate-400">
+                        Página <span class="font-semibold text-slate-200">{{ page_obj.number }}</span> de <span class="font-semibold text-slate-200">{{ page_obj.paginator.num_pages }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1" class="px-3 py-1.5 text-xs rounded-md bg-slate-700 text-slate-200 hover:bg-slate-600 transition">&laquo; Primera</a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 text-xs rounded-md bg-slate-700 text-slate-200 hover:bg-slate-600 transition">Anterior</a>
+                        {% endif %}
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1.5 text-xs rounded-md bg-slate-700 text-slate-200 hover:bg-slate-600 transition">Siguiente</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1.5 text-xs rounded-md bg-slate-700 text-slate-200 hover:bg-slate-600 transition">Última &raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
